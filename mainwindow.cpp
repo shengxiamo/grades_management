@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
     // 通过检测lineEidt变化连接到槽函数实现动态展示的效果
     connect(ui->lineEdit, &QLineEdit::textChanged, this, &MainWindow::on_seekButton_clicked);
 
-
     QSqlDatabase::addDatabase("QSQLITE");
     qDebug() << QSqlDatabase::drivers();
     // 初始化数据库连接
@@ -80,8 +79,6 @@ void MainWindow::on_saveButton_clicked()
     }
 }
 
-
-
 void MainWindow::on_pushButton_clicked()
 {
     // 获取当前选中的行号
@@ -104,9 +101,8 @@ void MainWindow::on_pushButton_clicked()
     } else {
         qDebug() << "Failed to delete row!";
     }
+    model->select();  //重新加载
 }
-
-
 
 void MainWindow::on_seekButton_clicked()
 {
@@ -132,23 +128,52 @@ void MainWindow::on_seekButton_clicked()
     }
 }
 
+void MainWindow::on_ascendingSortButton_clicked()
+{
+    // 获取用户选择的列号
+    int columnIndex = ui->tableView->selectionModel()->currentIndex().column();
 
-// void MainWindow::on_lineEdit_textChanged(const QString& text)
-// {
-//     // 清空下拉框中的内容
-//     ui->comboBox->clear();
+    // 获取列名
+    QString columnName = model->headerData(columnIndex, Qt::Horizontal).toString();
 
-//     // 如果输入文本为空，则隐藏下拉框
-//     if (text.isEmpty()) {
-//         ui->comboBox->hide();
-//         return;
-//     }
-// }
+    // 创建 SQL 查询语句进行升序排序
+    QString queryString = QString("SELECT * FROM studentsGrades ORDER BY %1 ASC").arg(columnName);
+
+    // 执行查询
+    QSqlQuery query;
+    if (query.exec(queryString)) {
+        // 清空模型数据
+        model->clear();
+
+        // 重新加载模型数据
+        model->setQuery(query);
+    } else {
+        qDebug() << "Failed to execute query:" << query.lastError().text();
+    }
+}
 
 
+void MainWindow::on_descendingSortButton_clicked()
+{
+    // 获取用户选择的列号
+    int columnIndex = ui->tableView->selectionModel()->currentIndex().column();
 
+    // 获取列名
+    QString columnName = model->headerData(columnIndex, Qt::Horizontal).toString();
 
+    // 创建 SQL 查询语句进行降序排序
+    QString queryString = QString("SELECT * FROM studentsGrades ORDER BY %1 DESC").arg(columnName);
 
+    // 执行查询
+    QSqlQuery query;
+    if (query.exec(queryString)) {
+        // 清空模型数据
+        model->clear();
 
-
+        // 重新加载模型数据
+        model->setQuery(query);
+    } else {
+        qDebug() << "Failed to execute query:" << query.lastError().text();
+    }
+}
 

@@ -31,7 +31,9 @@ private slots:
 
     void on_seekButton_clicked();
 
+    void on_ascendingSortButton_clicked();
 
+    void on_descendingSortButton_clicked();
 
 private:
     Ui::MainWindow *ui;

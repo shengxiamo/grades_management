@@ -130,6 +130,32 @@ QWidget {
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="ascendingSortButton">
+     <property name="geometry">
+      <rect>
+       <x>400</x>
+       <y>40</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>升序</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="descendingSortButton">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>40</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>降序</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="widget_3" native="true">
     <property name="geometry">
