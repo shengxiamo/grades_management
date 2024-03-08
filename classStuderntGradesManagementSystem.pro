@@ -11,9 +11,11 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    trie.cpp
 
 HEADERS += \
     mainwindow.h \
+    trie.h
 
 FORMS += \
     mainwindow.ui

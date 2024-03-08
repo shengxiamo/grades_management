@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "trie.h"
+
 #include <QMainWindow>
 #include <QtSql>
 #include <QInputDialog>
@@ -20,7 +22,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    //void on_lineEdit_textChanged(const QString& text);
 private slots:
 
     void on_addRowButton_clicked();
@@ -34,6 +35,12 @@ private slots:
     void on_ascendingSortButton_clicked();
 
     void on_descendingSortButton_clicked();
+
+    void on_lineEdit_textChanged(const QString &text);
+
+    void on_comboBox_activated(const QString& text);
+
+    void on_addColumnButton_clicked();
 
 private:
     Ui::MainWindow *ui;

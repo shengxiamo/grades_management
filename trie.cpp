@@ -1,19 +1,52 @@
 #include "trie.h"
 
-Trie::Trie() {}
+TrieNode::TrieNode() {
+    isEndOfWord = false;
+}
 
-void MainWindow::buildTrieFromModel()
-{
-    // 获取姓名所在列的索引（假设姓名列为第一列）
-    int nameColumn = 0; // 假设姓名列为第一列
+Trie::Trie() {
+    root = new TrieNode();
+}
 
-    // 获取模型中的行数
-    int rowCount = model->rowCount();
+Trie::~Trie() {
+    // 释放字典树的内存，防止内存泄漏
+    delete root;
+}
 
-    // 遍历模型中的每一行，并将姓名插入到 Trie 中
-    for (int row = 0; row < rowCount; ++row) {
-        QModelIndex index = model->index(row, nameColumn);
-        QString name = model->data(index).toString();
-        trie->insert(name);
+void Trie::insert(const QString& word) {
+    TrieNode* node = root;
+    for (const QChar& ch : word) {
+        if (node->children.find(ch) == node->children.end()) {
+            node->children[ch] = new TrieNode();
+        }
+        node = node->children[ch];
+    }
+    node->isEndOfWord = true;
+}
+
+QStringList Trie::search(const QString& prefix) {
+    QStringList results;
+    TrieNode* node = root;
+    for (const QChar& ch : prefix) {
+        if (node->children.find(ch) == node->children.end()) {
+            return results;
+        }
+        node = node->children[ch];
+    }
+    findAllWords(node, prefix, results);
+    return results;
+}
+
+void Trie::findAllWords(TrieNode* node, const QString& prefix, QStringList& results) {
+    if (node->isEndOfWord) {
+        results.append(prefix);
+    }
+
+    for (auto it = node->children.begin(); it != node->children.end(); ++it) {
+        QChar ch = it->first;
+        TrieNode* childNode = it->second;
+        QString newPrefix = prefix;
+        newPrefix.append(ch);
+        findAllWords(childNode, newPrefix, results);
     }
 }

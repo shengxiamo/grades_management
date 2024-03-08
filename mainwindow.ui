@@ -82,13 +82,26 @@ QWidget {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>190</y>
+       <y>240</y>
        <width>93</width>
        <height>28</height>
       </rect>
      </property>
      <property name="text">
       <string>删除</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="addColumnButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>190</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>增加科目</string>
      </property>
     </widget>
    </widget>
@@ -190,6 +203,16 @@ QWidget {
     border: 1px solid black;
 }
 </string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>60</y>
+      <width>211</width>
+      <height>41</height>
+     </rect>
     </property>
    </widget>
   </widget>
