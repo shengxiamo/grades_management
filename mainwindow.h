@@ -7,7 +7,7 @@
 #include <QtSql>
 #include <QInputDialog>
 #include <QCloseEvent>
-
+#include <QCompleter>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,6 +22,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void buildTrieTree();
 private slots:
 
     void on_addRowButton_clicked();
@@ -38,7 +39,7 @@ private slots:
 
     void on_lineEdit_textChanged(const QString &text);
 
-    void on_comboBox_activated(const QString& text);
+    //void on_comboBox_activated(const QString& text);
 
     void on_addColumnButton_clicked();
 
@@ -46,6 +47,10 @@ private:
     Ui::MainWindow *ui;
     QSqlDatabase db;
     QSqlTableModel *model;
+
+    // 将Trie类作为私有属性，只在用户点击保存后再重新构建，平时直接调用即可，大幅节省系统运行时间
+    Trie *trie;
+    QCompleter *completer;
 
 };
 #endif // MAINWINDOW_H

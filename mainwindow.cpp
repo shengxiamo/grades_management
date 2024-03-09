@@ -7,10 +7,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    qDebug() << "ok1";
-
-    qDebug() << "ok2";
-
     // 通过检测lineEidt变化连接到槽函数实现动态展示的效果
     connect(ui->lineEdit, &QLineEdit::textChanged, this, &MainWindow::on_seekButton_clicked);
 
@@ -39,7 +35,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->lineEdit->setEchoMode(QLineEdit::Normal);//设置lineEdit为明文
     ui->lineEdit->setStyleSheet("color: black;");
-    ui->comboBox->hide();
+
+
+    buildTrieTree();
+    completer = new QCompleter(this);
+    ui->lineEdit->setCompleter(completer);
+
 }
 
 MainWindow::~MainWindow()
@@ -78,6 +79,9 @@ void MainWindow::on_saveButton_clicked()
     } else {
         qDebug() << "Failed to save data!";
     }
+
+    // 调用方法重新构建字典树
+     // buildTrieTree();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -109,6 +113,7 @@ void MainWindow::on_pushButton_clicked()
     } else if (columns.size() == 1 && rows.size() > 1) {
         // 只选择了一列，删除该列的所有数据
         int column = *columns.constBegin();
+
         QString columnName = model->headerData(column, Qt::Horizontal).toString(); // 获取列名
         QString sql = QString("ALTER TABLE studentsGrades DROP COLUMN %1;").arg(columnName);
         QSqlQuery query;
@@ -212,49 +217,44 @@ void MainWindow::on_descendingSortButton_clicked()
 
 void MainWindow::on_lineEdit_textChanged(const QString &text)
 {
-    // 清空下拉框中的内容
-    ui->comboBox->clear();
+    // // 清空下拉框中的内容
+    // ui->comboBox->clear();
 
-    // 如果输入文本为空，则隐藏下拉框
-    if (text.isEmpty()) {
-        ui->comboBox->hide();
-        return;
-    }
+    // // 如果输入文本为空，则隐藏下拉框
+    // if (text.isEmpty()) {
+    //     ui->comboBox->hide();
+    //     return;
+    // }
 
-    // 创建 Trie 对象
-    Trie trie;
+    // // 创建 Trie 对象
+    // Trie trie;
 
-    // 获取姓名所在列的索引（假设姓名列为第一列）
-    int nameColumn = 0; // 假设姓名列为第一列
+    // // 获取姓名所在列的索引（假设姓名列为第一列）
+    // int nameColumn = 0; // 假设姓名列为第一列
 
-    // 遍历模型中的每一行，并将姓名插入到 Trie 中
-    for (int row = 0; row < model->rowCount(); ++row) {
-        QModelIndex index = model->index(row, nameColumn);
-        QString name = model->data(index).toString();
-        trie.insert(name);
-    }
+    // // 遍历模型中的每一行，并将姓名插入到 Trie 中
+    // for (int row = 0; row < model->rowCount(); ++row) {
+    //     QModelIndex index = model->index(row, nameColumn);
+    //     QString name = model->data(index).toString();
+    //     trie.insert(name);
+    // }
 
     // 根据输入前缀搜索匹配的姓名
-    QStringList results = trie.search(text);
 
-    // 如果有匹配的结果，则显示下拉框并添加结果到下拉框中
-    if (!results.isEmpty()) {
-        ui->comboBox->addItems(results);
-        ui->comboBox->show();
-    } else {
-        ui->comboBox->hide();
-    }
+    QStringList results = trie->search(text);
+
+    completer->setModel(new QStringListModel(results, completer));
 }
 
 
-void MainWindow::on_comboBox_activated(const QString& text)
-{
-    // 将选择的项添加到lineEdit中
-    // ui->lineEdit->setText(text);
+// void MainWindow::on_comboBox_activated(const QString& text)
+// {
+//     // 将选择的项添加到lineEdit中
+//     // ui->lineEdit->setText(text);
 
-    // 关闭下拉框
-    ui->comboBox->hide();
-}
+//     // 关闭下拉框
+//     ui->comboBox->hide();
+// }
 
 
 void MainWindow::on_addColumnButton_clicked()
@@ -266,29 +266,36 @@ void MainWindow::on_addColumnButton_clicked()
     if (columnName.isEmpty())
         return;
 
-    // 在数据库表中添加新的列，类型为 REAL
+    // 在数据库表中添加新的列
     QSqlQuery query;
-    QString alterQuery = QString("ALTER TABLE studentsGrades ADD COLUMN %1 REAL").arg(columnName);
+    QString alterQuery = QString("ALTER TABLE studentsGrades ADD COLUMN %1 TEXT").arg(columnName);
     if (!query.exec(alterQuery)) {
         qDebug() << "Failed to add new column to the table:" << query.lastError().text();
         return;
     }
 
-    // 在模型中添加新的列
-    int columnCount = model->columnCount();
-    model->insertColumn(columnCount);
-    model->setHeaderData(columnCount, Qt::Horizontal, columnName);
+    // 更新模型以反映数据库的新结构
+    model->setQuery("SELECT * FROM studentsGrades"); // 或者使用 setTable("studentsGrades")
 
-    // 将编辑策略设置为 OnFieldChange
+    // 确保模型允许编辑
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
 
-    // 提交模型的所有更改到数据库
-    if (model->submitAll()) {
-        ui->tableView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
-        model->select();
-        qDebug() << "New column added successfully!";
-    } else {
-        qDebug() << "Failed to save data!";
+    // 在模型中添加新的列
+    int columnCount = model->columnCount();
+    model->setHeaderData(columnCount - 1, Qt::Horizontal, columnName); // 默认新列是最后一列
+}
+
+void MainWindow::buildTrieTree() {
+
+    trie = new Trie(); // 创建新的Trie对象
+
+    int nameColumn = 0; // 姓名列始终为第一列
+
+    // 遍历模型中的每一行，并将姓名插入到 trie 中
+    for (int row = 0; row < model->rowCount(); ++row) {
+        QModelIndex index = model->index(row, nameColumn);
+        QString name = model->data(index).toString();
+        trie->insert(name);
     }
 }
 
