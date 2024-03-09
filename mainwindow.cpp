@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lineEdit->setEchoMode(QLineEdit::Normal);//设置lineEdit为明文
     ui->lineEdit->setStyleSheet("color: black;");
 
-
     buildTrieTree();
     completer = new QCompleter(this);
     ui->lineEdit->setCompleter(completer);
@@ -78,6 +77,7 @@ void MainWindow::on_saveButton_clicked()
         qDebug() << "Data saved successfully!";
     } else {
         qDebug() << "Failed to save data!";
+        QMessageBox::warning(this, "错误", "学号已存在，无法添加重复记录！");
     }
 
     // 调用方法重新构建字典树
