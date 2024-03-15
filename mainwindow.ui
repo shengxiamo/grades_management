@@ -62,7 +62,7 @@ QWidget {
       </rect>
      </property>
      <property name="text">
-      <string>添加</string>
+      <string>添加记录</string>
      </property>
     </widget>
     <widget class="QPushButton" name="saveButton">
@@ -101,7 +101,7 @@ QWidget {
       </rect>
      </property>
      <property name="text">
-      <string>增加科目</string>
+      <string>添加课程</string>
      </property>
     </widget>
    </widget>

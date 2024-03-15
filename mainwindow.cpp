@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowTitle("成绩管理系统");
+
     // 通过检测lineEidt变化连接到槽函数实现动态展示的效果
     connect(ui->lineEdit, &QLineEdit::textChanged, this, &MainWindow::on_seekButton_clicked);
 
@@ -15,7 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 初始化数据库连接
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("D:\\QT\\Projects\\classStuderntGradesManagementSystem\\student&gradesMangement.db");
+    QString dbPath = "..\\classStuderntGradesManagementSystem\\studentandgradesMangement.db";
+    db.setDatabaseName(dbPath); // 使用相对路径，保证项目迁移能正常使用
 
     if (!db.open()) {
         qDebug() << "无法打开数据库";
@@ -61,13 +64,6 @@ void MainWindow::on_addRowButton_clicked()
     model->setData(index, "");
     model->setData(model->index(rowCount, 1), "");
     model->setData(model->index(rowCount, 2),"");
-
-    // // 提交数据到数据库
-    // if (model->submitAll()) {
-    //     qDebug() << "New row added successfully!";
-    // } else {
-    //     qDebug() << "Failed to add new row!";
-    // }
 }
 
 void MainWindow::on_saveButton_clicked()
@@ -217,27 +213,6 @@ void MainWindow::on_descendingSortButton_clicked()
 
 void MainWindow::on_lineEdit_textChanged(const QString &text)
 {
-    // // 清空下拉框中的内容
-    // ui->comboBox->clear();
-
-    // // 如果输入文本为空，则隐藏下拉框
-    // if (text.isEmpty()) {
-    //     ui->comboBox->hide();
-    //     return;
-    // }
-
-    // // 创建 Trie 对象
-    // Trie trie;
-
-    // // 获取姓名所在列的索引（假设姓名列为第一列）
-    // int nameColumn = 0; // 假设姓名列为第一列
-
-    // // 遍历模型中的每一行，并将姓名插入到 Trie 中
-    // for (int row = 0; row < model->rowCount(); ++row) {
-    //     QModelIndex index = model->index(row, nameColumn);
-    //     QString name = model->data(index).toString();
-    //     trie.insert(name);
-    // }
 
     // 根据输入前缀搜索匹配的姓名
 
@@ -247,20 +222,10 @@ void MainWindow::on_lineEdit_textChanged(const QString &text)
 }
 
 
-// void MainWindow::on_comboBox_activated(const QString& text)
-// {
-//     // 将选择的项添加到lineEdit中
-//     // ui->lineEdit->setText(text);
-
-//     // 关闭下拉框
-//     ui->comboBox->hide();
-// }
-
-
 void MainWindow::on_addColumnButton_clicked()
 {
     // 弹出对话框，让用户输入新的科目名称
-    QString columnName = QInputDialog::getText(this, tr("Add New Column"), tr("Enter the name of the new subject:"));
+    QString columnName = QInputDialog::getText(this, tr("增加新列"), tr("输入科目名称"));
 
     // 如果用户取消了对话框，或者未输入任何名称，则不进行任何操作
     if (columnName.isEmpty())
