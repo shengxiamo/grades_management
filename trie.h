@@ -7,7 +7,7 @@
 
 class TrieNode {
 public:
-    std::unordered_map<QChar, TrieNode*> children; // 存储子节点的无序映射，键是字符，值是子节点的指针
+    std::unordered_map<QChar, TrieNode*> children; // 存储子节点的无序映射，键是字符，值是子节点的指针 {a:1, b:2, c:3}
     bool isEndOfWord; // 标记当前节点是否是一个单词的结尾
 
     TrieNode();

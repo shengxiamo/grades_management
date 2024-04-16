@@ -42,7 +42,6 @@ MainWindow::MainWindow(QWidget *parent)
     buildTrieTree();
     completer = new QCompleter(this);
     ui->lineEdit->setCompleter(completer);
-
 }
 
 MainWindow::~MainWindow()
