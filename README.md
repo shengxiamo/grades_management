@@ -1,11 +1,14 @@
 # 学生成绩管理系统
 
 ## 开发环境：
+
 ### 硬件：
+
 #### CPU：13th Gen Intel(R) Core(TM) i7-13650HX
 #### GPU:NVIDA GeForece RTX 4070 Laptop GPU
 
 ### 软件：
+
 #### 操作系统：windows 11 专业版
 #### IDE：Qt Creator 13.0.0 (Community)
 #### 数据库：SQLite
